@@ -1,3 +1,5 @@
+.venv/*
+
 # Autosave files
 *.asv
 *.m~
