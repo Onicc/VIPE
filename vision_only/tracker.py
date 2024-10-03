@@ -45,10 +45,12 @@ class MarkerTracker:
         self,
         camera_params: str,
         markers_params: str,
+        transform_params: str,
         width: int = 1920,
         height: int = 1080,
         fps: int = 30,
     ):
+        self.transform_params_path = transform_params
         self.width = width
         self.height = height
         self.fps = fps
@@ -72,8 +74,67 @@ class MarkerTracker:
         
         self.kalman_filter = KalmanFilter()
         
-        self.baseRvec = np.zeros([3, 1])
-        self.baseTvec = np.zeros([3, 1])
+        self.load_transform_params()
+        
+    def load_transform_params(self):
+        try:
+            with open(self.transform_params_path, "r") as f:
+                params = json.load(f)
+                self.baseRvec = np.array(params["rvec"])
+                self.baseTvec = np.array(params["tvec"])
+        except:
+            self.baseRvec = np.zeros([3, 1])
+            self.baseTvec = np.zeros([3, 1])
+            # raise Exception("Couldn't open transform params file, please calibrate first.")
+            print("Couldn't open transform params file, please calibrate first.")
+
+    def estimate_camera_pose_charuco(self, frame):
+        camera_matrix = self.cameraMatrix
+        dist_coeffs = self.distCoeffs
+        corners, ids, rejected = self.charuco_detector.detectMarkers(frame)
+        if len(corners) == 0:
+            raise Exception("No markers detected")
+        display_frame = aruco.drawDetectedMarkers(image=frame, corners=corners)
+        num_corners, charuco_corners, charuco_ids = aruco.interpolateCornersCharuco(
+            markerCorners=corners, markerIds=ids, image=frame, board=self.charuco_board
+        )
+        if num_corners < 5:
+            raise Exception("Not enough corners detected")
+        display_frame = aruco.drawDetectedCornersCharuco(
+            image=display_frame, charucoCorners=charuco_corners, charucoIds=charuco_ids
+        )
+        success, rvec, tvec = aruco.estimatePoseCharucoBoard(
+            charuco_corners,
+            charuco_ids,
+            self.charuco_board,
+            camera_matrix,
+            dist_coeffs,
+            None,
+            None,
+            False,
+        )
+        if not success:
+            raise Exception("Failed to estimate camera pose")
+        # The rvec from charuco is z-down for some reason.
+        # This is a hack to convert back to z-up.
+        rvec, *_ = cv2.composeRT(np.array([0, 0, -np.pi / 2]), tvec * 0, rvec, tvec)
+        rvec, *_ = cv2.composeRT(np.array([0, np.pi, 0]), tvec * 0, rvec, tvec)
+        display_frame = cv2.drawFrameAxes(
+            display_frame, camera_matrix, dist_coeffs, rvec, tvec, 0.2
+        )
+        # cv2.imshow("Charuco", display_frame)
+        # return (rvec, tvec)
+        self.baseRvec = rvec
+        self.baseTvec = tvec
+        
+        with open(self.transform_params_path, "w") as f:
+            json.dump(
+                {
+                    "rvec": rvec.tolist(),
+                    "tvec": tvec.tolist(),
+                },
+                f,
+            )
 
     def read_camera_parameters(self, filename: str) -> Tuple[np.ndarray, np.ndarray]:
         fs = cv2.FileStorage(filename, cv2.FILE_STORAGE_READ)
