@@ -28,7 +28,15 @@ For detailed instructions, please refer to the camera calibration README:
 
 👉 [Camera Calibration Guide](camera_calibration/README.md)
 
-### 3. Pure Visual Pose Estimation
+### 3. Markers Calibration
+
+After calibrating your camera, the next step is to calibrate the relative positions of the ArUco markers.
+
+We provide a tool to assist you with this process. For detailed instructions on how to perform the markers calibration, please refer to the Markers Calibration README:
+
+👉 [Markers Calibration Guide](markers_calibration/README.md)
+
+### 4. Pure Visual Pose Estimation
 
 If you are using pure visual methods (without IMU), the following section will guide you through the process of setting up and running the pure visual pose estimation pipeline.
 
@@ -36,7 +44,7 @@ For detailed instructions, please refer to the pure visual pose estimation READM
 
 👉 [Pure Visual Pose Estimation Guide](vision_only/README.md)
 
-### 4. Visual-Inertial Pose Estimation
+### 5. Visual-Inertial Pose Estimation
 
 For projects involving both vision and IMU data, the visual-inertial pose estimation is recommended. This setup provides more robust and accurate results, especially in challenging environments.
 
@@ -44,7 +52,7 @@ For detailed instructions, please refer to the visual-inertial pose estimation R
 
 👉 [Visual-Inertial Pose Estimation Guide](visual_inertial/README.md)
 
-### 5. Running ROS2 Nodes
+### 6. Running ROS2 Nodes
 
 The ROS2 version of the visual-inertial pose estimation pipeline is available on the ros2 branch. Please switch to the ros2 branch by using the following command:
 

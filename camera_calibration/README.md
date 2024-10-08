@@ -88,6 +88,11 @@ Once you have collected a sufficient number of images (at least 10), proceed wit
 
    During execution, the script will display each image with the detected Charuco markers and corners. Press any key to proceed to the next image.
 
+3. **Copy to app folder**
+   ```bash
+   cp camera_calibration/params/camera_params.yml vision_only/params
+   ```
+
 ---
 
 ### Output
