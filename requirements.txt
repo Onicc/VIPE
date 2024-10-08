@@ -1,0 +1,16 @@
+bleak==0.22.2
+llvmlite==0.43.0
+numba==0.60.0
+numpy==2.0.2
+opencv-contrib-python==4.10.0.84
+opencv-python==4.10.0.84
+packaging==24.1
+plotly==5.24.0
+pyobjc-core==10.3.1
+pyobjc-framework-Cocoa==10.3.1
+pyobjc-framework-CoreBluetooth==10.3.1
+pyobjc-framework-libdispatch==10.3.1
+pyquaternion==0.9.9
+scipy==1.14.1
+tenacity==9.0.0
+websockets==13.1
